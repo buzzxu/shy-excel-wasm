@@ -69,11 +69,6 @@ function start(val, num, buffer, fileName, error,shyexcel) {
         loadimg.style.width = '80%';
         loadimg.style.height = '10px';
         parentDiv.appendChild(loadimg);
-
-        //进度
-        var processing = document.createElement('div');
-        processing.id = 'div:shyexcel:processing';
-        parentDiv.appendChild(processing)
     }
 
     if(num == 2) {

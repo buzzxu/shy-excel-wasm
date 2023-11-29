@@ -569,6 +569,7 @@
 import pako from 'pako';
 import {common_extend,deepMerge,random} from "./util.js";
 import {start} from "./toast.js"
+
 const defaultSetting = {
     method:'GET',
     responseType: 'json',
@@ -609,8 +610,6 @@ let _shyexcel = {
                 return;
             }
             const f = shyexcelInstance.NewTable(data,(_data)=>{
-                //更新dom
-
             });
             const { buffer, error } = f.WriteToBuffer();
             if (error) {
@@ -645,11 +644,15 @@ function NewTable(setting){
 async function fetchData(url, params, setting) {
     let fetchOptions = {
         method: setting.method,
-        headers: setting.headers || undefined,
-        body: setting.method.toUpperCase() === 'POST' ? params : undefined,
     };
-    if (setting.method.toUpperCase() === 'GET' && params) {
-        url += '?' + new URLSearchParams(params).toString();
+    if (setting.headers !== null) {
+        fetchOptions.headers = setting.headers;
+    }
+    if (setting.method.toUpperCase() === 'GET' && params !== null) {
+        const _params = new URLSearchParams(params).toString();
+        url += '?' + _params;
+    } else if (setting.method.toUpperCase() === 'POST' && params !== null) {
+        fetchOptions.body = params;
     }
     try {
         const response = await fetch(url, fetchOptions);
