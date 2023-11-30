@@ -14,15 +14,23 @@
         var shyexcelOpts = {
             method:'GET',
             headers:{
-                'Authorization':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJoYWliYW8ubXhiYy5uZXQiLCJzdWIiOiIxIiwiaWF0IjoxNzAxMjIzNzExLCJleHAiOjE3MDM4MTU3MTEsInR5cGUiOjksInVzZXJOYW1lIjoiYWRtaW5pIiwicmVnaW9uIjoyLCJjbk5hbWUiOiIifQ.aezLUkBk2g_lkux9dhUJmF44Y8NcvQMqzzXVfB-P5pTiK-X8OVkB1tYVx4qnLDKwOZD0YA4-gEt3rk5Btf3X0A'
+                'Authorization':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ4d2pkLnhpbmdjaGVuZ2EueHl6Iiwic3ViIjoiNiIsImlhdCI6MTcwMTM1MDAwNywiZXhwIjoxNzAxOTU0ODA3LCJ0eXBlIjoxMCwidXNlck5hbWUiOm51bGwsInJlZ2lvbiI6MTAsIm1vYmlsZSI6IjE4MCoqKio4MDg4IiwiYXZhdGFyIjoiIiwic2V4IjowLCJuYW1lIjoiJUU4JUI1JUI1JUU1JUE0JUE3JUU1JUE0JUE3In0.suEjvveuab27JdRHKg3UbwOoxXP1OZqv-tU3BNXvKB2g5k93c_G_LLNAciIMRslY--5QfG1ehL1Yf-7qaE65-A'
             },
             responseType: 'json',  //默认json 可选属性，非必填
             timeout: 1000*10,  //请求超时时间
+            handleResponse: response=>{
+                return response.json().then(data=>{
+                    if(data.code === 200){
+                        return data.data;
+                    }
+                    throw new Error(data.message);
+                });
+            }
         };
         try {
-            shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','https://posters-mgr.mxbc.net/api/order/export/flash/excel',{
-                startTime:'2023-11-01',
-                endTime:'2023-11-03'
+            shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','https://api.mgr.xwjd.xingchenga.xyz/mall/decorate/order/shy/export',{
+                startTime: undefined,
+                endTime:undefined
             });
         }catch (error){
             console.error(error)

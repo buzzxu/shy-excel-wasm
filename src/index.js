@@ -557,15 +557,6 @@
     }
 })();
 
-
-/*export async function init(wasmPath) {
-    const go = new Go();
-    window.shyexcel = {};
-    const result = await WebAssembly.instantiateStreaming(fetch(wasmPath), go.importObject);
-    go.run(result.instance);
-    return shyexcel;
-};*/
-
 import pako from 'pako';
 import {common_extend,deepMerge,random} from "./util.js";
 import {start} from "./toast.js"
@@ -573,9 +564,12 @@ import {start} from "./toast.js"
 const defaultSetting = {
     method:'GET',
     responseType: 'json',
-    wasm: './static/shyexcel.wasm.gz',
+    wasm: 'https://unpkg.com/shy-excel-wasm/shyexcel.wasm.gz',
     timeout: 1000*10,
     headers: null,
+    handleResponse: response=>{
+        return this.responseType === 'protubuf' ? response.arrayBuffer() : response.json()
+    },
     tips: {
         normal:'正在导出中,请勿刷新页面',
         error:'导出失败,请点击查看详情',
@@ -610,7 +604,11 @@ let _shyexcel = {
                 return;
             }
             const f = shyexcelInstance.NewTable(data,(_data)=>{
+                console.log(`${_data.sheetName}  ${_data.current+1}/${_data.total}`)
             });
+            if (!f){
+                throw new Error("Excel生成失败,请检查数据格式")
+            }
             const { buffer, error } = f.WriteToBuffer();
             if (error) {
                 this.handleError(error);
@@ -627,7 +625,8 @@ let _shyexcel = {
         }
     },
     handleError: function (error) {
-        start(this._setting.tips.error, 3, '','',error.message,_shyexcel);
+        console.error(`Error occurred at ${new Date().toISOString()}: `, error);
+        start(this._setting.tips.error, 3, '','',error,_shyexcel);
         this._setting.error(error);
         this._status = 0;
 
@@ -656,7 +655,13 @@ async function fetchData(url, params, setting) {
     }
     try {
         const response = await fetch(url, fetchOptions);
-        return setting.responseType === 'protubuf' ? response.arrayBuffer() : response.json();
+        if (!response.ok){
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        if (!setting.handleResponse){
+            return defaultSetting.handleResponse(response)
+        }
+        return await setting.handleResponse(response)
     } catch (error) {
         console.error("Error fetching data: ", error);
         return { error };
