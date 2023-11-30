@@ -567,9 +567,7 @@ const defaultSetting = {
     wasm: 'https://unpkg.com/shy-excel-wasm/shyexcel.wasm.gz',
     timeout: 1000*10,
     headers: null,
-    handleResponse: response=>{
-        return this.responseType === 'protubuf' ? response.arrayBuffer() : response.json()
-    },
+    handleData: null,
     tips: {
         normal:'正在导出中,请勿刷新页面',
         error:'导出失败,请点击查看详情',
@@ -658,10 +656,14 @@ async function fetchData(url, params, setting) {
         if (!response.ok){
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        if (!setting.handleResponse){
-            return defaultSetting.handleResponse(response)
+        if(setting.responseType === 'protubuf'){
+            return response.arrayBuffer()
         }
-        return await setting.handleResponse(response)
+        const json = response.json()
+        if(setting.handleData){
+            return setting.handleData(await json)
+        }
+        return json
     } catch (error) {
         console.error("Error fetching data: ", error);
         return { error };

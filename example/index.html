@@ -18,19 +18,11 @@
             },
             responseType: 'json',  //默认json 可选属性，非必填
             timeout: 1000*10,  //请求超时时间
-            handleResponse: response=>{
-                return response.json().then(data=>{
-                    if(data.code === 200){
-                        return data.data;
-                    }
-                    throw new Error(data.message);
-                });
-            }
         };
         try {
             shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','https://api.mgr.xwjd.xingchenga.xyz/mall/decorate/order/shy/export',{
-                startTime: undefined,
-                endTime:undefined
+                // startTime: undefined,
+                // endTime:undefined
             });
         }catch (error){
             console.error(error)
