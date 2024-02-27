@@ -47,7 +47,15 @@ export default [
             resolve(),
             terser(),
 
-        ]
+        ],
+        context: 'window',
+        moduleContext: (id) => {
+            // msgpack，设置上下文为'window'
+            console.info("",id)
+            if (id.includes('messagepack')) {
+                return 'window';
+            }
+        }
     },
     {
         // CommonJS Node module

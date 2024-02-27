@@ -27,6 +27,14 @@ export default [
                 openPage: '/example/index.html',
                 port: 3000
             })
-        ]
+        ],
+        context: 'window',
+        moduleContext: (id) => {
+            // msgpack，设置上下文为'window'
+            console.info("",id)
+            if (id.includes('messagepack')) {
+                return 'window';
+            }
+        }
     }
 ]

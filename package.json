@@ -1,6 +1,6 @@
 {
   "name": "shy-excel-wasm",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "A pure WebAssembly / Javascript port of Go Excelize library",
   "type": "module",
   "main": "main.cjs",
@@ -45,5 +45,8 @@
     "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-serve": "^2.0.2",
     "shy-excel-wasm": "^0.0.8"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.0.0-beta2"
   }
 }

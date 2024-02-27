@@ -558,6 +558,7 @@
 })();
 
 import pako from 'pako';
+import { decode } from "@msgpack/msgpack";
 import {common_extend,deepMerge,random} from "./util.js";
 import {start} from "./toast.js"
 
@@ -656,8 +657,9 @@ async function fetchData(url, params, setting) {
         if (!response.ok){
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        if(setting.responseType === 'protubuf'){
-            return response.arrayBuffer()
+        const contentType = response.headers.get('Content-Type')
+        if(contentType === 'application/x-msgpack'){
+            return decode(new Uint8Array(await response.arrayBuffer()))
         }
         const json = response.json()
         if(setting.handleData){
