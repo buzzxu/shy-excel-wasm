@@ -14,7 +14,7 @@
         var shyexcelOpts = {
             method:'GET',
             headers:{
-                'Authorization':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ4d2pkLnhpbmdjaGVuZ2EueHl6Iiwic3ViIjoiMTE4IiwiaWF0IjoxNzA5MDA4OTEyLCJleHAiOjE3MDk2MTM3MTIsInR5cGUiOjEsInVzZXJOYW1lIjoidGVuYW50IiwicmVnaW9uIjozLCJtb2JpbGUiOiIiLCJhdmF0YXIiOiIiLCJzZXgiOjAsIm5hbWUiOiIlRTclQUUlQTElRTclOTAlODYlRTUlOTElOTgifQ.x3XjgcxQe78VgxGTYv7aVvn8tMjkUD07ryA1AtivJjQiqopi_aN9HsaPDaCWarceGi6Bn74Xmrr5JqeKsjnODQ'
+                'Authorization':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ4dy1qZC5jb20iLCJzdWIiOiIyNzc1IiwiaWF0IjoxNzI4ODg4MDA5LCJleHAiOjE3Mjk0OTI4MDksInR5cGUiOjEsInVzZXJOYW1lIjoieHV4IiwicmVnaW9uIjoxMCwibW9iaWxlIjoiIiwiYXZhdGFyIjoiIiwic2V4IjowLCJuYW1lIjoiJUU1JUJFJTkwJUU3JUJGJTk0In0.TP2nPsEGBmUBLdh3-J0xr_0czV6paM7SvD6BAInrfQccm9HuKoQFPJ5pqq3PXuVhCRoYluoKIpCnYJebv_sV5w'
             },
             timeout: 1000*10,  //请求超时时间
             handleData: data=>{
@@ -25,9 +25,8 @@
             }
         };
         try {
-            shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','http://127.0.0.1:8089/mall/order/shy/export',{
-                startTime: '2023-01-01',
-                endTime:'2023-01-30'
+            shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','https://boss.xw-jd.com/api/mall/order/tenant/infos/shy/export',{
+                "keywords":"S0000001671635025239474176"
             });
         }catch (error){
             console.error(error)
