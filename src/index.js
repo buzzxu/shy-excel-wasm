@@ -569,6 +569,7 @@ const defaultSetting = {
     timeout: 1000*10,
     headers: null,
     handleData: null,
+    retryCount: 2, // 新增重试次数配置
     tips: {
         normal:'正在导出中,请勿刷新页面',
         error:'导出失败,请点击查看详情',
@@ -581,7 +582,7 @@ const defaultSetting = {
 };
 
 let shyexcelInstance = null;
-
+let wasmBuffer = null;
 
 
 let _shyexcel = {
@@ -593,7 +594,20 @@ let _shyexcel = {
             var startTime = new Date();
             this._status = 1
             start(this._setting.tips.normal, 1,'','','', _shyexcel)
-            const _data = typeof urlOrData === 'string' ? fetchData(urlOrData, params,this._setting) : Promise.resolve(urlOrData);
+            // 添加重试机制
+            const fetchWithRetry = async (url, params, retriesLeft) => {
+                try {
+                    return await fetchData(url, params, this._setting);
+                } catch (error) {
+                    if (retriesLeft > 0) {
+                        console.warn(`Retrying fetch. Attempts left: ${retriesLeft}`);
+                        return fetchWithRetry(url, params, retriesLeft - 1);
+                    }
+                    throw error;
+                }
+            };
+
+            const _data = typeof urlOrData === 'string' ? fetchWithRetry(urlOrData, params,this._setting.retryCount) : Promise.resolve(urlOrData);
             if (!shyexcelInstance) { // 新增：只在第一次调用时初始化 WebAssembly 模块
                 shyexcelInstance = await init(this._setting.wasm);
             }
@@ -621,6 +635,7 @@ let _shyexcel = {
             this.handleError(error);
         } finally {
             this._status = 0;
+            shyexcelInstance = null
         }
     },
     handleError: function (error) {
@@ -642,6 +657,7 @@ function NewTable(setting){
 async function fetchData(url, params, setting) {
     let fetchOptions = {
         method: setting.method,
+        timeout: setting.timeout || 10000 // 添加超时设置
     };
     if (setting.headers !== null) {
         fetchOptions.headers = setting.headers;
@@ -653,6 +669,10 @@ async function fetchData(url, params, setting) {
         fetchOptions.body = params;
     }
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), setting.timeout);
+        fetchOptions.signal = controller.signal;
+
         const response = await fetch(url, fetchOptions);
         if (!response.ok){
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -662,10 +682,7 @@ async function fetchData(url, params, setting) {
             return decode(new Uint8Array(await response.arrayBuffer()))
         }
         const json = response.json()
-        if(setting.handleData){
-            return setting.handleData(await json)
-        }
-        return json
+        return setting.handleData ? setting.handleData(json) : json;
     } catch (error) {
         console.error("Error fetching data: ", error);
         return { error };
@@ -674,19 +691,20 @@ async function fetchData(url, params, setting) {
 
 async function init(wasmPath) {
     const go = new Go();
-    var buffer;
-    if (typeof window === 'undefined') {
-        global.shyexcel = {};
-        const fs = require('fs');
-        buffer = pako.ungzip(fs.readFileSync(wasmPath));
-    } else {
-        window.shyexcel = {};
-        buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
+    if(!wasmBuffer){
+        if (typeof window === 'undefined') {
+            global.shyexcel = {};
+            const fs = require('fs');
+            wasmBuffer = pako.ungzip(fs.readFileSync(wasmPath));
+        } else {
+            window.shyexcel = {};
+            wasmBuffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
+        }
+        if (wasmBuffer[0] === 0x1f && wasmBuffer[1] === 0x8b) {
+            wasmBuffer = pako.ungzip(wasmPath);
+        }
     }
-    if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
-        buffer = pako.ungzip(buffer);
-    }
-    const result = await WebAssembly.instantiate(buffer, go.importObject);
+    const result = await WebAssembly.instantiate(wasmBuffer, go.importObject);
     go.run(result.instance);
     return shyexcel;
 }

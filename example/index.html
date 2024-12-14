@@ -14,7 +14,7 @@
         var shyexcelOpts = {
             method:'GET',
             headers:{
-                'Authorization':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ4dy1qZC5jb20iLCJzdWIiOiIyNzc1IiwiaWF0IjoxNzI4ODg4MDA5LCJleHAiOjE3Mjk0OTI4MDksInR5cGUiOjEsInVzZXJOYW1lIjoieHV4IiwicmVnaW9uIjoxMCwibW9iaWxlIjoiIiwiYXZhdGFyIjoiIiwic2V4IjowLCJuYW1lIjoiJUU1JUJFJTkwJUU3JUJGJTk0In0.TP2nPsEGBmUBLdh3-J0xr_0czV6paM7SvD6BAInrfQccm9HuKoQFPJ5pqq3PXuVhCRoYluoKIpCnYJebv_sV5w'
+                'Authorization':'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ4dy1qZC5jb20iLCJzdWIiOiI3MjkxIiwiaWF0IjoxNzM0MTczNzU3LCJleHAiOjE3MzQ3Nzg1NTcsInR5cGUiOjExLCJ1c2VyTmFtZSI6bnVsbCwicmVnaW9uIjoxMCwibW9iaWxlIjoiMTkxKioqKjkwMDQiLCJhdmF0YXIiOiIiLCJzZXgiOjAsIm5hbWUiOiIlRTglOTAlQTUlRTUlODYlQjAlRTklOUMlOUMifQ.jmvedqECxPjuZjRtAarNXt0nOdigqVLGT5ha-a2T5jLhGfud7ghIPfclqhV2XLDDvaQlkodVoE3_pSn_8vEBoA'
             },
             timeout: 1000*10,  //请求超时时间
             handleData: data=>{
@@ -25,13 +25,13 @@
             }
         };
         try {
-            shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','https://boss.xw-jd.com/api/mall/order/tenant/infos/shy/export',{
-                "keywords":"S0000001671635025239474176"
+            shyexcelWASM.NewTable(shyexcelOpts).export('a.xlsx','https://boss.xw-jd.com/api/mall/decorate/order/shy/export',{
+                "startTime":"2024-12-14",
+                "endTime":"2024-12-14"
             });
         }catch (error){
             console.error(error)
         }
-
 
     }
 
