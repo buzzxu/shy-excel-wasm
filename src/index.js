@@ -674,6 +674,7 @@ async function fetchData(url, params, setting) {
         fetchOptions.signal = controller.signal;
 
         const response = await fetch(url, fetchOptions);
+        clearTimeout(timeoutId);
         if (!response.ok){
             throw new Error(`HTTP error! status: ${response.status}`);
         }
